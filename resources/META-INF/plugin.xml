@@ -1,7 +1,7 @@
 <idea-plugin version="4">
   <id>com.your.company.unique.plugin.id</id>
   <name>Plugin display name here</name>
-  <version>1.1</version>
+  <version>1.2</version>
   <vendor email="nosabelvi@gmail.com" url="http://belvi.xyz">YourCompany</vendor>
 
   <description><![CDATA[

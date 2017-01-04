@@ -1,5 +1,6 @@
-package ResourceTypeOrganiser;
+package ResourceTypeOrganiser.gui;
 
+import ResourceTypeOrganiser.gui.views.FilterComboBox;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.TextBrowseFolderListener;

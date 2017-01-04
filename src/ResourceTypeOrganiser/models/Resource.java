@@ -1,4 +1,4 @@
-package ResourceTypeOrganiser;
+package ResourceTypeOrganiser.models;
 
 import com.intellij.psi.xml.XmlTag;
 

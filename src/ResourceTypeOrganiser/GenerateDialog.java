@@ -1,5 +1,9 @@
 package ResourceTypeOrganiser;
 
+import ResourceTypeOrganiser.gui.EditSession;
+import ResourceTypeOrganiser.gui.cellAdapter.ItemRenderer;
+import ResourceTypeOrganiser.models.Resource;
+import ResourceTypeOrganiser.models.ResourceMap;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.psi.xml.XmlFile;
 import com.intellij.psi.xml.XmlTag;

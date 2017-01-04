@@ -1,4 +1,4 @@
-package ResourceTypeOrganiser;
+package ResourceTypeOrganiser.gui.views;
 
 import javax.accessibility.AccessibleContext;
 import javax.accessibility.AccessibleState;

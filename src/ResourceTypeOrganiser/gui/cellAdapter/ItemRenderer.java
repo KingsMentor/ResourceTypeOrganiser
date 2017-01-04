@@ -1,4 +1,8 @@
-package ResourceTypeOrganiser;
+package ResourceTypeOrganiser.gui.cellAdapter;
+
+import ResourceTypeOrganiser.gui.views.FilterComboBox;
+import ResourceTypeOrganiser.models.Resource;
+import ResourceTypeOrganiser.models.ResourceMap;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -9,7 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-class ItemRenderer extends JPanel implements ListCellRenderer {
+public class ItemRenderer extends JPanel implements ListCellRenderer {
 
     private JTextArea previewArea;
     private JTextField idField;

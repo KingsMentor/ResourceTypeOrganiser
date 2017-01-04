@@ -1,5 +1,8 @@
 package ResourceTypeOrganiser;
 
+import ResourceTypeOrganiser.gui.cellAdapter.ItemRenderer;
+import ResourceTypeOrganiser.models.Resource;
+import ResourceTypeOrganiser.models.ResourceMap;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.LangDataKeys;
@@ -25,7 +28,7 @@ public class ActionHello extends AnAction {
 
     @Override
     public void actionPerformed(AnActionEvent e) {
-        // TODO: insert action logic here
+
         XmlFile xmlFile = getXmlFileFromContext(e);
         GenerateDialog generateDialog = new GenerateDialog(xmlFile);
         generateDialog.show();
@@ -47,7 +50,6 @@ public class ActionHello extends AnAction {
                         org.jdom.Document doc = JDOMUtil.loadDocument(new File(generateDialog.getIdPath()));
                         for (ResourceMap resourceMap : resourceMaps) {
                             if (!isIdResourceMapped(resourceMap, ids)) {
-//                                System.out.println(resourceMap.getTempValue());
                                 Element element = new Element("item");
 
                                 element.setAttribute("name", ItemRenderer.standardizeId(resourceMap.getTempValue()));
@@ -57,15 +59,9 @@ public class ActionHello extends AnAction {
                             }
 
                         }
-//                        <item name="zn_recharge" type="id"/>
-//                        <yea:sample xmlns:yea="na so"/>
-//                        doc.getRootElement().addContent(new Element("sample", "yea", "na so"));
                         fileOutputStream = new FileOutputStream(new File(generateDialog.getIdPath()));
                         fileOutputStream.write(new XMLOutputter().outputString(doc).getBytes());
                         fileOutputStream.close();
-
-
-//                comboBoxColor.addItem(key);
 
 
                     } catch (FileNotFoundException e1) {
@@ -107,8 +103,6 @@ public class ActionHello extends AnAction {
         for (ResourceMap resourceMap : resourceMaps) {
             if (resource.getTrackId() != null)
                 if (resource.getTrackId().equals(resourceMap.getResourceTrackId())) {
-//                if (hasChildren)
-//                    resourceMap.getContent().substring(0, resourceMap.getContent().indexOf(">") + 1);
                     return resourceMap.getContent();
                 }
         }
