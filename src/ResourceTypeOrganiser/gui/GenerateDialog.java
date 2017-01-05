@@ -1,7 +1,6 @@
-package ResourceTypeOrganiser;
+package ResourceTypeOrganiser.gui;
 
-import ResourceTypeOrganiser.gui.EditSession;
-import ResourceTypeOrganiser.gui.cellAdapter.ItemRenderer;
+import ResourceTypeOrganiser.gui.cellAdapter.ListItemRenderer;
 import ResourceTypeOrganiser.models.Resource;
 import ResourceTypeOrganiser.models.ResourceMap;
 import com.intellij.openapi.ui.DialogWrapper;
@@ -20,63 +19,63 @@ import java.util.*;
  * Created by zone2 on 12/14/16.
  */
 public class GenerateDialog extends DialogWrapper implements Observer {
-    //    CollectionListModel<ResourceMap> collectionListModel;
-    JPanel jPanel;
-    Resource resource;
-    EditSession editSession;
+    private Resource resource;
+    private EditSession editSession;
+    private ArrayList<ResourceMap> resourceMaps;
 
-    protected GenerateDialog(@Nullable XmlFile xmlFile) {
+    public GenerateDialog(@Nullable XmlFile xmlFile) {
         super(xmlFile.getProject());
-        XmlTag xmlTag = xmlFile.getDocument().getRootTag();
-        resource = new Resource();
-        resourceMaps = new ArrayList<>();
-        iterateTag(resource, new ArrayList<>(), xmlTag);
-
 
         setTitle("Organise Resource");
-        jPanel = new JPanel(new BorderLayout());
-        JBTabbedPane jtp = new JBTabbedPane();
-        JPanel jp = new JPanel(new BorderLayout());
+
+        resource = new Resource();
+        resourceMaps = new ArrayList<>();
+
+        // iterate through xml file to get resource
+        iterateTag(resource, new ArrayList<>(), xmlFile.getDocument().getRootTag());
 
 
-        JBList list = new JBList(resourceMaps);
-
-        editSession = new EditSession(xmlFile.getProject(), resourceMaps);
-
-        ItemRenderer itemRenderer = new ItemRenderer(editSession.getPreviewArea(), editSession.getNewIdField(), editSession.getFilteredComboBox(), resource, resourceMaps);
-
-
-        list.setCellRenderer(itemRenderer);
-
-        list.setPreferredSize(new Dimension(500, 1000));
-        list.setSelectedIndex(0);
-
-
-        list.setVisibleRowCount(4);
-        JBScrollPane pane = new JBScrollPane(list);
-        jp.add(pane, BorderLayout.CENTER);
-
-        jp.add(editSession, BorderLayout.EAST);
-
-
-        jtp.addTab("Ids", jp);
-        jPanel.add(jtp, BorderLayout.CENTER);
-
-
-        getContentPane().add(jPanel);
-
-
+        // handle GUI
+        initGui(xmlFile);
+        getContentPane().add(mainContainer);
         init();
     }
 
+
     @Override
     public void update(Observable o, Object arg) {
-        System.out.println("change has occured");
+//        System.out.println("change has occured");
     }
 
+    JPanel mainContainer;
 
-    //    ArrayList<Resource> resources = new ArrayList<>();
-    ArrayList<ResourceMap> resourceMaps;
+    private void initGui(XmlFile xmlFile) {
+        mainContainer = new JPanel(new BorderLayout());
+        JBTabbedPane resourceTypeTab = new JBTabbedPane();
+
+        editSession = new EditSession(xmlFile.getProject(), resourceMaps);
+        JBList resourceTypesListView = new JBList(resourceMaps);
+
+        ListItemRenderer itemRenderer = new ListItemRenderer(editSession.getPreviewArea(), editSession.getNewIdField(), editSession.getFilteredComboBox(), resourceMaps);
+        resourceTypesListView.setCellRenderer(itemRenderer);
+        resourceTypesListView.setPreferredSize(new Dimension(500, 1000));
+        resourceTypesListView.setSelectedIndex(0);
+        resourceTypesListView.setVisibleRowCount(10);
+
+
+        JBScrollPane resourceTypesListViewScrollContainer = new JBScrollPane(resourceTypesListView);
+
+        JPanel uiParentPanel = new JPanel(new BorderLayout());
+        uiParentPanel.add(resourceTypesListViewScrollContainer, BorderLayout.CENTER);
+
+        uiParentPanel.add(editSession, BorderLayout.EAST);
+
+
+        resourceTypeTab.addTab("Ids", uiParentPanel);
+
+        mainContainer.add(resourceTypeTab, BorderLayout.CENTER);
+    }
+
 
     private void iterateTag(Resource resource, ArrayList<Resource> resources, XmlTag xmlTag) {
         XmlTag[] subTags = xmlTag.getSubTags();
@@ -96,7 +95,6 @@ public class GenerateDialog extends DialogWrapper implements Observer {
                 resourceMap.addObserver(this);
                 resourceMaps.add(resourceMap);
             }
-//            System.out.println(xmlTag.getAttribute("android:id").getValue());
         }
         resource.setXmlTag(xmlTag);
         if (subTags.length > 0) {
@@ -117,7 +115,7 @@ public class GenerateDialog extends DialogWrapper implements Observer {
     @Nullable
     @Override
     protected JComponent createCenterPanel() {
-        return jPanel;
+        return mainContainer;
     }
 
     public String getIdPath() {

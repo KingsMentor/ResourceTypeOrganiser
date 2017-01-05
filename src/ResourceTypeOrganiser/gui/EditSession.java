@@ -32,8 +32,6 @@ import java.util.List;
 public class EditSession extends JPanel {
 
     public EditSession(Project project, ArrayList items) {
-//            setSize(3500, 3500);
-
         add(resDir(project, items));
     }
 
@@ -64,6 +62,7 @@ public class EditSession extends JPanel {
 
     private JPanel resDirectoryPanel(Project project) {
         resDirField = new TextFieldWithBrowseButton();
+        resDirField.getTextField().setFont(new Font("Serif", Font.PLAIN, 12));
         resDirField.setEditable(false);
         resDirField.setText(project.getBasePath() + DEFAULT_RES_DIR);
         resDirField.addBrowseFolderListener(new TextBrowseFolderListener(
@@ -91,7 +90,10 @@ public class EditSession extends JPanel {
             }
         });
         JPanel resDirectoryPanel = new JPanel(new HorizontalLayout(110));
-        resDirectoryPanel.add(new JLabel("Res Diretory : "));
+
+        JLabel redDir = new JLabel("Res Diretory : ");
+        redDir.setFont(new Font("Serif", Font.PLAIN, 12));
+        resDirectoryPanel.add(redDir);
         resDirField.setPreferredSize(new Dimension(340, (int) resDirField.getPreferredSize().getHeight()));
         resDirectoryPanel.add(resDirField);
         return resDirectoryPanel;
@@ -100,10 +102,13 @@ public class EditSession extends JPanel {
     private FilterComboBox filteredComboBox;
 
     private JPanel resValueIdPanel(ArrayList<String> items) {
-        JPanel resValueIdPanel = new JPanel(new HorizontalLayout(60));
-        resValueIdPanel.add(new JLabel("Res-Value id (@id/) : "));
+        JPanel resValueIdPanel = new JPanel(new HorizontalLayout(70));
+        JLabel resLabel = new JLabel("Res-Value id (@id/) : ");
+        resLabel.setFont(new Font("Serif", Font.PLAIN, 12));
+        resValueIdPanel.add(resLabel);
         filteredComboBox = new FilterComboBox();
-        filteredComboBox.setPreferredSize(new Dimension(170, (int) filteredComboBox.getPreferredSize().getHeight()));
+        filteredComboBox.setFont(new Font("Serif", Font.PLAIN, 12));
+        filteredComboBox.setPreferredSize(new Dimension(175, (int) filteredComboBox.getPreferredSize().getHeight()));
         populateFilteredItems(items);
 
 //
@@ -113,7 +118,8 @@ public class EditSession extends JPanel {
         resValueIdPanel.add(filteredComboBox);
         JPanel hbox = new JPanel(new HorizontalLayout(5));
         hbox.add(resValueIdPanel);
-        newIdField.setPreferredSize(new Dimension(170, (int) newIdField.getPreferredSize().getHeight()));
+        newIdField.setFont(new Font("Serif", Font.PLAIN, 12));
+        newIdField.setPreferredSize(new Dimension(175, (int) newIdField.getPreferredSize().getHeight()));
         hbox.add(newIdField);
 //        resValueIdPanel.add(newIdField);
 
@@ -131,10 +137,12 @@ public class EditSession extends JPanel {
 
 
         JPanel previewPanel = new JPanel(new HorizontalLayout(100));
-        previewPanel.add(new JLabel("View Content : "));
+        JLabel viewContent = new JLabel("View Content : ");
+        viewContent.setFont(new Font("Serif", Font.PLAIN, 12));
+        previewPanel.add(viewContent);
 
 
-        previewArea.setFont(new Font(null, Font.PLAIN, 12));
+        previewArea.setFont(new Font("Serif", Font.PLAIN, 13));
         previewArea.setEditable(false);
         previewArea.setLineWrap(false);
         previewArea.setPreferredSize(new Dimension(350, 150));
@@ -171,9 +179,11 @@ public class EditSession extends JPanel {
         JPanel repoPanel = new JPanel(new VerticalLayout(5));
         repoPanel.add(new JSeparator());
         JBLabel gitRepo = new JBLabel("<html>Contribute on <a href=\"http://google.github.io/material-design-icons/\">github</a></html>");
+        gitRepo.setFont(new Font("Serif", Font.PLAIN, 14));
         repoPanel.add(gitRepo);
 
         JBLabel aboutMe = new JBLabel("<html>release <b>version 1.0-alpha</b> developed by <a href=\"http://belvi.xyz/\">Nosakhare Belvi</a></html>");
+        aboutMe.setFont(new Font("Serif", Font.PLAIN, 14));
         repoPanel.add(aboutMe);
         initLabelLink(gitRepo, "");
         initLabelLink(aboutMe, "http://belvi.xyz");

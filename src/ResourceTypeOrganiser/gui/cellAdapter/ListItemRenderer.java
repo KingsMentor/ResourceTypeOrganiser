@@ -3,6 +3,7 @@ package ResourceTypeOrganiser.gui.cellAdapter;
 import ResourceTypeOrganiser.gui.views.FilterComboBox;
 import ResourceTypeOrganiser.models.Resource;
 import ResourceTypeOrganiser.models.ResourceMap;
+import ResourceTypeOrganiser.utils.Utils;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -13,17 +14,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-public class ItemRenderer extends JPanel implements ListCellRenderer {
+public class ListItemRenderer extends JPanel implements ListCellRenderer {
 
     private JTextArea previewArea;
     private JTextField idField;
-    private Resource resource;
     private FilterComboBox filterComboBox;
     private ArrayList<ResourceMap> resourceMaps;
 
-    public ItemRenderer(JTextArea previewArea, JTextField idField, FilterComboBox filterComboBox, Resource resource, ArrayList<ResourceMap> resourceMaps) {
+    public ListItemRenderer(JTextArea previewArea, JTextField idField, FilterComboBox filterComboBox, ArrayList<ResourceMap> resourceMaps) {
         this.previewArea = previewArea;
-        this.resource = resource;
         this.resourceMaps = resourceMaps;
         this.idField = idField;
         this.filterComboBox = filterComboBox;
@@ -34,6 +33,7 @@ public class ItemRenderer extends JPanel implements ListCellRenderer {
     static int currentIndex = 0;
 
     private String lastFilterItem = "";
+
     @Override
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 
@@ -41,9 +41,10 @@ public class ItemRenderer extends JPanel implements ListCellRenderer {
 
 
         JLabel viewTypeLabel = new JLabel(resourceMaps.get(index).getViewName());
-        viewTypeLabel.setFont(new Font(null, Font.BOLD, 14));
+        viewTypeLabel.setFont(new Font("Serif", Font.BOLD, 13));
 
-        idDetail = new JLabel("from " + resourceMaps.get(index).getIdValue() + " to @id/" + standardizeId(resourceMaps.get(index).getTempValue()) + "");
+        idDetail = new JLabel("<html> from <b>" + resourceMaps.get(index).getIdValue() + "</b> to <b>@id/" + Utils.standardizeId(resourceMaps.get(index).getTempValue()) + "</b> </html>");
+        idDetail.setFont(new Font("Serif", Font.PLAIN, 14));
         itemPanel.setLayout(new GridLayout(2, 1));
 
 
@@ -56,7 +57,7 @@ public class ItemRenderer extends JPanel implements ListCellRenderer {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String currentFilterItem = filterComboBox.getSelectedItem().toString();
-                if(!lastFilterItem.equals(currentFilterItem)){
+                if (!lastFilterItem.equals(currentFilterItem)) {
                     updateValue(currentFilterItem);
                     list.revalidate();
                 }
@@ -64,10 +65,10 @@ public class ItemRenderer extends JPanel implements ListCellRenderer {
         });
         if (isSelected) {
             currentIndex = index;
-            itemPanel.setBackground(Color.BLUE);
+            itemPanel.setBackground(new Color(73, 157, 245));
             viewTypeLabel.setForeground(Color.WHITE);
             idDetail.setForeground(Color.WHITE);
-            this.idField.setText(standardizeId(resourceMaps.get(index).getTempValue()));
+            this.idField.setText(Utils.standardizeId(resourceMaps.get(index).getTempValue()));
             this.idField.getDocument().addDocumentListener(new DocumentListener() {
                 @Override
                 public void insertUpdate(DocumentEvent e) {
@@ -93,7 +94,7 @@ public class ItemRenderer extends JPanel implements ListCellRenderer {
             if (index % 2 == 0) {
                 itemPanel.setBackground(Color.WHITE);
             } else {
-                itemPanel.setBackground(Color.LIGHT_GRAY);
+                itemPanel.setBackground(new Color(221, 221, 221));
             }
         }
 
@@ -105,17 +106,15 @@ public class ItemRenderer extends JPanel implements ListCellRenderer {
     private void updateValue(String text) {
 
         String content = resourceMaps.get(currentIndex).getContent();
-        content = content.replace(resourceMaps.get(currentIndex).getTempValue(), "@id/" + standardizeId(text));
+        content = content.replace(resourceMaps.get(currentIndex).getTempValue(), "@id/" + Utils.standardizeId(text));
         previewArea.setText(content);
 
-        resourceMaps.get(currentIndex).setTempValue("@id/" + standardizeId(text));
+        resourceMaps.get(currentIndex).setTempValue("@id/" + Utils.standardizeId(text));
         resourceMaps.get(currentIndex).setContent(content);
-        idDetail.setText("from " + resourceMaps.get(currentIndex).getIdValue() + " to @id/" + standardizeId(resourceMaps.get(currentIndex).getTempValue()) + "");
+        idDetail.setText("<html> from <b>" + resourceMaps.get(currentIndex).getIdValue() + "</b> to <b>@id/" + Utils.standardizeId(resourceMaps.get(currentIndex).getTempValue()) + "</b> </html>");
 
 
     }
 
-    public static String standardizeId(String id) {
-        return id.replace("@+id/", "").replace("@id/", "");
-    }
+
 }

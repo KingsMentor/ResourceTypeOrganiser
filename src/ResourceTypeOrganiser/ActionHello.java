@@ -1,8 +1,10 @@
 package ResourceTypeOrganiser;
 
-import ResourceTypeOrganiser.gui.cellAdapter.ItemRenderer;
+import ResourceTypeOrganiser.gui.GenerateDialog;
+import ResourceTypeOrganiser.gui.cellAdapter.ListItemRenderer;
 import ResourceTypeOrganiser.models.Resource;
 import ResourceTypeOrganiser.models.ResourceMap;
+import ResourceTypeOrganiser.utils.Utils;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.LangDataKeys;
@@ -26,6 +28,8 @@ import java.util.ArrayList;
  */
 public class ActionHello extends AnAction {
 
+    private String layoutXml = "";
+
     @Override
     public void actionPerformed(AnActionEvent e) {
 
@@ -33,37 +37,16 @@ public class ActionHello extends AnAction {
         GenerateDialog generateDialog = new GenerateDialog(xmlFile);
         generateDialog.show();
         if (generateDialog.isOK()) {
-            xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
+            layoutXml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
             Resource resource = generateDialog.getResource();
             ArrayList<ResourceMap> resourceMaps = generateDialog.getResourceMaps();
-            generateResource(resource, resourceMaps);
+            generateNewLayoutXml(resource, resourceMaps);
             ApplicationManager.getApplication().runWriteAction(new Runnable() {
                 @Override
                 public void run() {
-                    VirtualFile virtualFile = xmlFile.getVirtualFile();
                     try {
-                        FileOutputStream fileOutputStream = new FileOutputStream(new File(virtualFile.getPath()));
-                        fileOutputStream.write(xml.getBytes());
-                        fileOutputStream.close();
-                        ArrayList<String> ids = generateDialog.ids();
-
-                        org.jdom.Document doc = JDOMUtil.loadDocument(new File(generateDialog.getIdPath()));
-                        for (ResourceMap resourceMap : resourceMaps) {
-                            if (!isIdResourceMapped(resourceMap, ids)) {
-                                Element element = new Element("item");
-
-                                element.setAttribute("name", ItemRenderer.standardizeId(resourceMap.getTempValue()));
-                                element.setAttribute("type", "id");
-
-                                doc.getRootElement().addContent(element);
-                            }
-
-                        }
-                        fileOutputStream = new FileOutputStream(new File(generateDialog.getIdPath()));
-                        fileOutputStream.write(new XMLOutputter().outputString(doc).getBytes());
-                        fileOutputStream.close();
-
-
+                        writeToLayout(xmlFile);
+                        writeToResourceXml(generateDialog, resourceMaps);
                     } catch (FileNotFoundException e1) {
                         e1.printStackTrace();
                     } catch (IOException e1) {
@@ -77,40 +60,6 @@ public class ActionHello extends AnAction {
 
         }
     }
-
-    String xml = "";
-
-    private void generateResource(Resource resource, ArrayList<ResourceMap> resourceMaps) {
-        if (resource != null) {
-            if (resource.getChildren() == null) {
-                String content = getContent(resource, resourceMaps, false);
-                xml += content + "\n";
-            } else {
-                String content = getContent(resource, resourceMaps, true);
-                xml += content + "\n";
-                for (int x = 0; x < resource.getChildren().size(); x++) {
-                    generateResource(resource.getChildren().get(x), resourceMaps);
-                    if (x + 1 == resource.getChildren().size()) {
-                        String viewName = resource.getXmlTag().getName();
-                        xml += "</" + viewName + ">\n";
-                    }
-                }
-            }
-        }
-    }
-
-    private String getContent(Resource resource, ArrayList<ResourceMap> resourceMaps, boolean hasChildren) {
-        for (ResourceMap resourceMap : resourceMaps) {
-            if (resource.getTrackId() != null)
-                if (resource.getTrackId().equals(resourceMap.getResourceTrackId())) {
-                    return resourceMap.getContent();
-                }
-        }
-        if (hasChildren)
-            return resource.getXmlTag().getNode().getText().substring(0, resource.getXmlTag().getNode().getText().indexOf(">") + 1);
-        return resource.getXmlTag().getNode().getText();
-    }
-
 
     @Override
     public void update(AnActionEvent e) {
@@ -129,7 +78,67 @@ public class ActionHello extends AnAction {
 
     }
 
+
+    private void generateNewLayoutXml(Resource resource, ArrayList<ResourceMap> resourceMaps) {
+        if (resource != null) {
+            if (resource.getChildren() == null) {
+                String content = getUpdatedResourceTypeContent(resource, resourceMaps, false);
+                layoutXml += content + "\n";
+            } else {
+                String content = getUpdatedResourceTypeContent(resource, resourceMaps, true);
+                layoutXml += content + "\n";
+                for (int x = 0; x < resource.getChildren().size(); x++) {
+                    generateNewLayoutXml(resource.getChildren().get(x), resourceMaps);
+                    if (x + 1 == resource.getChildren().size()) {
+                        String viewName = resource.getXmlTag().getName();
+                        layoutXml += "</" + viewName + ">\n";
+                    }
+                }
+            }
+        }
+    }
+
+    private String getUpdatedResourceTypeContent(Resource resource, ArrayList<ResourceMap> resourceMaps, boolean hasChildren) {
+        for (ResourceMap resourceMap : resourceMaps) {
+            if (resource.getTrackId() != null)
+                if (resource.getTrackId().equals(resourceMap.getResourceTrackId())) {
+                    return resourceMap.getContent();
+                }
+        }
+        if (hasChildren)
+            return resource.getXmlTag().getNode().getText().substring(0, resource.getXmlTag().getNode().getText().indexOf(">") + 1);
+        return resource.getXmlTag().getNode().getText();
+    }
+
+
     private boolean isIdResourceMapped(ResourceMap resourceMap, ArrayList<String> ids) {
-        return ids.contains(ItemRenderer.standardizeId(resourceMap.getTempValue()));
+        return ids.contains(Utils.standardizeId(resourceMap.getTempValue()));
+    }
+
+    private void writeToLayout(XmlFile xmlFile) throws IOException {
+        VirtualFile virtualFile = xmlFile.getVirtualFile();
+        FileOutputStream fileOutputStream = new FileOutputStream(new File(virtualFile.getPath()));
+        fileOutputStream.write(layoutXml.getBytes());
+        fileOutputStream.close();
+
+
+    }
+
+    private void writeToResourceXml(GenerateDialog generateDialog, ArrayList<ResourceMap> resourceMaps) throws JDOMException, IOException {
+        ArrayList<String> ids = generateDialog.ids();
+        org.jdom.Document doc = JDOMUtil.loadDocument(new File(generateDialog.getIdPath()));
+        for (ResourceMap resourceMap : resourceMaps) {
+            if (!isIdResourceMapped(resourceMap, ids)) {
+                Element element = new Element("item");
+                element.setAttribute("name", Utils.standardizeId(resourceMap.getTempValue()));
+                element.setAttribute("type", "id");
+
+                doc.getRootElement().addContent(element);
+            }
+
+        }
+        FileOutputStream fileOutputStream = new FileOutputStream(new File(generateDialog.getIdPath()));
+        fileOutputStream.write(new XMLOutputter().outputString(doc).getBytes());
+        fileOutputStream.close();
     }
 }
