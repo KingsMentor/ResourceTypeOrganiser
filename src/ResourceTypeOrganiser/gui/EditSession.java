@@ -31,15 +31,13 @@ import java.util.List;
 
 public class EditSession extends JPanel {
 
-    public EditSession(Project project, ArrayList items) {
-        add(resDir(project, items));
+    public EditSession(Project project) {
+        add(resDir(project));
     }
 
-    public JPanel resDir(Project project, ArrayList items) {
+    public JPanel resDir(Project project) {
 
         JPanel parentPanel = new JPanel(new VerticalLayout(10));
-//        resDirectoryPanel(parentPanel);
-//        resValueIdPanel(parentPanel, new ArrayList<>());
         parentPanel.add(resDirectoryPanel(project));
 
         ArrayList values = getValues(project.getBasePath() + DEFAULT_RES_DIR, "id");
@@ -67,7 +65,7 @@ public class EditSession extends JPanel {
         resDirField.setText(project.getBasePath() + DEFAULT_RES_DIR);
         resDirField.addBrowseFolderListener(new TextBrowseFolderListener(
                 new FileChooserDescriptor(true, false, false, false, false, false), project));
-//        resDirField.setPreferredSize(new Dimension(350, 20));
+        
         resDirField.getTextField().getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
@@ -111,9 +109,6 @@ public class EditSession extends JPanel {
         filteredComboBox.setPreferredSize(new Dimension(175, (int) filteredComboBox.getPreferredSize().getHeight()));
         populateFilteredItems(items);
 
-//
-//        newIdField.setPreferredSize(new Dimension(240, 20));
-//        filteredComboBox.setPreferredSize(new Dimension(100, 20));
 
         resValueIdPanel.add(filteredComboBox);
         JPanel hbox = new JPanel(new HorizontalLayout(5));
@@ -121,7 +116,6 @@ public class EditSession extends JPanel {
         newIdField.setFont(new Font("Serif", Font.PLAIN, 12));
         newIdField.setPreferredSize(new Dimension(175, (int) newIdField.getPreferredSize().getHeight()));
         hbox.add(newIdField);
-//        resValueIdPanel.add(newIdField);
 
         return hbox;
     }
@@ -203,7 +197,6 @@ public class EditSession extends JPanel {
                         ids.add(element.getAttributeValue("name"));
                     }
 
-//                comboBoxColor.addItem(key);
                 }
 
             } catch (JDOMException e) {

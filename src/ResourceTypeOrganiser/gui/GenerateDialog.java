@@ -53,7 +53,7 @@ public class GenerateDialog extends DialogWrapper implements Observer {
         mainContainer = new JPanel(new BorderLayout());
         JBTabbedPane resourceTypeTab = new JBTabbedPane();
 
-        editSession = new EditSession(xmlFile.getProject(), resourceMaps);
+        editSession = new EditSession(xmlFile.getProject());
         JBList resourceTypesListView = new JBList(resourceMaps);
 
         ListItemRenderer itemRenderer = new ListItemRenderer(editSession.getPreviewArea(), editSession.getNewIdField(), editSession.getFilteredComboBox(), resourceMaps);
